@@ -1,0 +1,199 @@
+class Node {
+    constructor(value=null,next_node=null) {
+        this._value = value
+        this._next_node = next_node
+    }
+
+    get value() {
+        return this._value
+    }
+    set value(newValue){
+        this._value = newValue
+    }
+
+    get next_node(){
+        return this._next_node
+    }
+    set next_node(newNode){
+        this._next_node = newNode
+    }
+
+    toString() {
+        return `${this._value}`
+    }
+}
+
+class LinkedList{
+    constructor () {
+        this.head = new Node()
+    }
+    
+    tailHelper(node){
+        if (node.next_node == null){
+            return node
+        }else{
+            return this.tailHelper(node.next_node)
+        }
+    }
+    tail(){
+        if (this.head.next_node != null){
+            return this.tailHelper(this.head.next_node)
+        }return this.head
+    }
+
+    length(){
+        // Returns the length of the Linked List
+        let count = 1
+        let node = this.head
+        while (node.next_node){
+            count++
+            node = node.next_node
+        }
+        return count
+    }
+
+    append(value){
+        let newNode = new Node(value)
+        if (this.head.value == null){
+            this.head = newNode
+        }else{
+            let tailNode = this.tail()
+            tailNode.next_node = newNode
+        }
+    }
+
+    prepend(value){
+        let newNode = new Node(value)
+        newNode.next_node = this.head
+        this.head = newNode
+    }
+
+    remove(value){
+        if (this.head.value === value) {
+            this.head = this.head.next_node;
+        } else {
+            this.removeHelper(this.head, value);
+        }
+    }
+    
+    removeHelper(node, value){
+        if (node.next_node && node.next_node.value === value) {
+            node.next_node = node.next_node.next_node;
+        } else if (node.next_node) {
+            this.removeHelper(node.next_node, value);
+        }
+    }
+
+    atHelper(node,count,index){
+        if (count == index){
+            return node
+        }else{
+            count++
+            return this.atHelper(node.next_node, count, index)
+        }
+    }
+
+    at(index){
+        // Returns node at index
+        let length = this.length()
+        if (index < length){
+            // Valid
+            return this.atHelper(this.head, 0, index)
+        }throw new Error("Index out of Range")
+    }
+    pop(){
+        let tail = this.tail()
+        let pre_tail = this.at(this.length() - 2)
+        pre_tail.next_node = null
+    }
+
+    containsHelper(node,value,index){
+        if (node.value == value){
+            return true
+        }
+        else if (value != node.value && node.next_node){
+            index++
+            return this.containsHelper(node.next_node, value, index)
+        }else{
+            return false
+        }
+    }
+    contains(value){
+        // Returns the index if exits ; null
+        return this.containsHelper(this.head, value, 0)
+    }
+    findHelper(node, value, index){
+        if (node.value == value){
+            return index
+        }else if(node.next_node){
+            index++
+            return this.findHelper(node.next_node, value, index)
+        }return null
+    }
+    find(value){
+        return this.findHelper(this.head,value, 0)
+    }
+
+    insertAt(value,index){
+        let newNode = new Node(value)
+        // Add a value at an index
+        if (index <= this.length() - 1){
+            if (index == 0){
+                newNode.next_node = this.head
+                this.head = newNode
+            }else if (index == 1){
+                newNode.next_node = this.head.next_node
+                this.head.next_node = newNode
+            }else if (index == this.length() - 1){
+                let tail = this.tail()
+                tail.next_node = newNode
+            }
+            else{
+                let c_node = this.at(index)
+                let p_node = this.at(index-1)
+                newNode.next_node = c_node
+                p_node.next_node = newNode
+            }
+            
+        }else{
+            console.error("Index Out of Range")
+        }
+        
+    }
+    removeAt(index){
+        // Add a value at an index
+        if (index <= this.length() - 1){
+            if (index == 0){
+                let new_head = this.head.next_node
+                this.head = new_head
+            }else if (index == this.length() - 1){
+                let pre_tail = this.at(index-1)
+                pre_tail.next_node = null
+
+            }else{
+                let p_node = this.at(index-1)
+                let c_node = this.at(index)
+                p_node.next_node = c_node.next_node
+            }
+            
+        }else{
+            console.error("Index Out of Range")
+        }
+        
+    }
+    toString(){
+        if (this.head.value == null){
+            return `( Null )`
+        }else{
+            return this.toStringHelper(this.head)
+        }
+    }
+    toStringHelper(node){
+        if (node.next_node == null){
+            return `( ${node.value} ) -> ( Null )`
+        }else{
+            return `( ${node.value} ) ->  ${this.toStringHelper(node.next_node)}`
+        }
+    }
+}
+export {LinkedList}
